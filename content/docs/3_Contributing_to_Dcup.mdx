@@ -1,0 +1,65 @@
+---
+title: Contributing to Dcup
+description: Thanks for taking the time to contribute ❤️. All types of contributions—whether code, documentation, bug reports, or feature ideas—are encouraged and valued!
+---
+
+# How to Report a Bug
+We use GitHub issues to track bugs and errors. If you run into a problem with Dcup, please:
+
+- Open an Issue: Describe the problem.
+- Explain the Behavior: Share what you expected versus what actually happened.
+- Provide Details: Include as much context as possible, such as isolated code examples and clear reproduction steps.
+
+A well-documented bug report helps us fix issues quickly.
+
+# How to Request a New Feature
+Enhancement suggestions are tracked as GitHub issues. When suggesting a new feature, please:
+
+- **Use a Clear, Descriptive Title**: Help us quickly understand the suggestion.
+- **Provide a Detailed Description**: Explain the current behavior, your expected behavior, and why this change would benefit Dcup users.
+- **Include Visuals**: Add screenshots or examples if applicable.
+Your ideas are important in making Dcup even better.
+
+# How to Contribute Code
+## Working on Your First Pull Request
+If you're new to open-source, check out our list of "good first issues" on GitHub. These issues have a relatively limited scope and are a great starting point.
+
+## Opening a Pull Request
+1. Fork the Repository:
+```bash
+git clone https://github.com/Dcup-dev/dcup.git
+cd dcup
+git remote add upstream https://github.com/Dcup-dev/dcup.git
+```
+2. Sync Your Local Main Branch:
+```bash
+git checkout main
+git pull upstream main
+```
+3. Install Dependencies:
+```bash
+npm install
+```
+4. Setting Up the Development Environment
+    - Copy `.env.example` into `.env`: Update the .env file with your settings.
+    - Launch Required Services: Start PostgreSQL, Redis, and Qdrant with
+```bash
+make docker-run
+```
+5. Start the Development Server:
+```bash
+npm run dev
+```
+6. Create a New Topic Branch:
+```bash
+git checkout -b feature/my-feature
+```
+7. Make Your Changes, Commit, and Push:
+```bash
+git push -u origin feature/my-feature
+```
+8. Open a Pull Request on GitHub:
+Describe your changes clearly and reference any related issues.
+
+### Merge Strategy
+We use **squash & merge** to keep the main branch history clean.

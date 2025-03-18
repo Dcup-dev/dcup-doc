@@ -91,24 +91,25 @@ function Hero() {
           </Link>
         </Button>
         <Button asChild size='lg' variant='outline'>
-       <a
-          href="https://github.com/Dcup-dev/dcup"
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          <FaGithub className="h-5 w-5" />
-          Star on GitHub
-        </a>
+          <a
+            href="https://github.com/Dcup-dev/dcup"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            <FaGithub className="h-5 w-5" />
+            Star on GitHub
+          </a>
         </Button>
-       </div>
+      </div>
 
       <div className="mt-16 -mb-40 min-w-[800px] border lg:-mb-18 xl:min-w-[1100px] xl:-mx-24">
-        <div className="relative overflow-hidden rounded-xl border shadow-2xl">
+        <div className="relative overflow-hidden border shadow-2xl">
           <Image
             src="/dcup_dashboard.gif"
             alt="Dcup Dashboard Preview"
             width={1360}
             height={760}
+            unoptimized={true}
             priority
             className={cn(
               'w-full select-none bg-muted/50 duration-1000 animate-in fade-in slide-in-from-bottom-12',

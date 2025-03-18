@@ -1,0 +1,153 @@
+---
+title: Get Started with Dcup
+description: This guide will help you set up Dcup—your self-hostable RAG-as-a-Service platform—and show you how to interact with its Retrieval API using JavaScript. (Cloud version coming soon!)
+---
+# 1. Installation
+## Prerequisites
+- Docker & Docker Compose: Ensure both are installed and running.
+
+## Steps to Install
+1. Clone the Repository:
+```bash
+git clone https://github.com/Dcup-dev/dcup.git
+cd dcup
+```
+2. Configure Your Environment:
+    - Duplicate the sample environment file:
+    ```bash
+    cp .env.example .env
+    ```
+    - Open the `.env` file in your favorite editor and update the settings (e.g., API keys, database connection strings).
+
+3. Launch Dcup with Docker Compose:
+Start all required services (Postgres, Redis, Qdrant, and Dcup) by running:
+```bash 
+docker compose -f docker-compose.prod.yml --env-file .env up --detach --remove-orphans
+```
+This command builds the images (if needed), creates the containers, and runs the application in the background.
+
+# 2. Using Dcup
+- Access the UI :
+Once the containers are running, open your browser and navigate to:
+```bash
+http://localhost:8080
+```
+The intuitive UI is designed to help you manage your data ingestion, chunking, and indexing processes easily—even if you're not a tech expert.
+
+## How the Pipeline Works
+### Data Ingestion:
+Connect to data sources like Google Drive. New files are automatically fetched, and you can attach metadata or set limits on the number of files/pages to process.
+
+#### IMAGES
+
+### Chunking & Embedding:
+In the background, Dcup reads each file, splits it into chunks, and sends each chunk to OpenAI for generating a title, summary, and embeddings.
+
+### Storage & Indexing:
+These enriched chunks are stored in Qdrant for robust indexing and fast retrieval. Redis is used for caching metadata.
+
+### Retrieval:
+Use the Retrieval API to search your indexed data. The API expands your query, generates embeddings, and retrieves matching chunks using advanced filtering and re-ranking.
+
+# 3. Quick Start with the Retrieval API
+## API Endpoint
+### Endpoint: `POST /api/retrievals`
+## Request Format
+Include the following parameters in your JSON request body:
+- **query (string, required)**: Your search query (min. 2 characters).
+- **top_chunk (number, optional)**: Number of top results to return (default: 5).
+- **filter (object, optional)**: Filter criteria to narrow down results.
+- **rerank (boolean, optional)**: Set to true to enable re-ranking (default: false).
+- **min_score_threshold (number, optional)**: Minimum score threshold for results.
+Example Request
+```json
+{
+  "query": "example search query",
+  "top_chunk": 5,
+  "filter": {
+    "field": "value"
+  },
+  "rerank": true,
+  "min_score_threshold": 0.5
+}
+````
+#### JavaScript Usage Example
+Below is an example of how you can use JavaScript and the Fetch API to send a request to Dcup's Retrieval API:
+```js
+// Replace with your actual API key
+const API_KEY = 'YOUR_API_KEY_HERE';
+
+const requestData = {
+  query: "example search query",
+  top_chunk: 5,
+  filter: { field: "value" },
+  rerank: true,
+  min_score_threshold: 0.5
+};
+
+fetch('http://localhost:8080/api/retrievals', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${API_KEY}`
+  },
+  body: JSON.stringify(requestData)
+})
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log('Retrieved Chunks:', data.scored_chunks);
+  })
+  .catch(error => {
+    console.error('Error fetching data:', error);
+  });
+```
+### How It Works
+- Prepare the Request:
+Build a JSON object with your search query and parameters.
+
+#### Send the Request:
+- Use the Fetch API to POST your request to `http://localhost:8080/api/retrievals` along with your API key.
+
+#### Process the Response:
+- The API returns a JSON response with an array of scored chunks, which include details such as document name, page number, content, and score.
+
+### Example Response
+A successful response will return a JSON object with an array of scored chunks:
+```json
+{
+  "scored_chunks": [
+    {
+      "id": "chunk_1",
+      "document_name": "Document A",
+      "page_number": 1,
+      "chunk_number": 2,
+      "source": "Google Drive",
+      "title": "Introduction",
+      "summary": "Overview of the topic",
+      "content": "Lorem ipsum dolor sit amet...",
+      "type": "text",
+      "metadata": {},
+      "score": 0.87
+    }
+    // ...more chunks
+  ]
+}
+```
+# 4. Next Steps
+## Explore:
+Once set up, experiment with uploading data, configuring metadata, and testing the retrieval API.
+
+## Contribute:
+If you have ideas or improvements, feel free to contribute to the project on GitHub.
+
+## Feedback:
+Your feedback is invaluable. Let us know how we can make Dcup even better!
+
+---
+Dcup is designed to simplify the complex world of Retrieval-Augmented Generation. Enjoy using the platform, and happy coding!
+
