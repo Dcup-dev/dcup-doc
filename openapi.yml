@@ -1,0 +1,1256 @@
+openapi: 3.0.0
+info:
+  title: Dcup API
+  version: 1.0.0
+servers:
+  - url: https://localhost:3000
+
+tags:
+  - name: Connections
+    description: Manage user connections (list,create, get, update, delete, sync, status)
+  - name: Chunks
+    description: Retrieve raw chunks by ID
+  - name: Files
+    description: List and upload files for a connection
+  - name: Retrievals
+    description: Semantic search and retrieval of document chunks
+paths:
+  # ──────────────────────────────────────────────
+  # Connections group
+  # ──────────────────────────────────────────────
+  /api/connections:
+    get:
+      x-method: GET
+      tags:
+        - Connections
+      summary: Retrieve connections
+      description: Returns a list of connections for the authenticated user, including connection details and associated files.
+      operationId: getConnections
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A list of connections
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConnectionResponse'
+              example:
+                - connectionId: "conn1"
+                  identifier: "my_connection"
+                  source: "google_drive"
+                  sourceFolder: "My Folder"
+                  metadata: {}
+                  isConfigSet: true
+                  lastSynced: "2023-10-01T12:00:00Z"
+                  createdAt: "2023-09-01T12:00:00Z"
+                  chunkCount: 10
+                  pageCount: 5
+                  files:
+                    - name: "file1.pdf"
+                      totalPages: 3
+                      chunksIds: ["chunk1", "chunk2"]
+                    - name: "file2.pdf"
+                      totalPages: 2
+                      chunksIds: ["chunk3"]
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: "unauthorized"
+                message: "Authentication failed"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: "internal_server_error"
+                message: "An unexpected error occurred"
+  
+  /api/connections/{id}:
+    get:
+      x-method: GET
+      tags:
+        - Connections
+      summary: Retrieve specific connection
+      description: Returns details of a single connection for the authenticated user, identified by the connection ID, including associated files.
+      operationId: getConnectionById
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the connection
+          example: "123"
+          schema:
+            type: string 
+      responses:
+        '200':
+          description: Details of the requested connection
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectionResponse'
+              example:
+                connectionId: "conn1"
+                identifier: "my_connection"
+                source: "google_drive"
+                sourceFolder: "My Folder"
+                metadata: {}
+                isConfigSet: true
+                lastSynced: "2023-10-01T12:00:00Z"
+                createdAt: "2023-09-01T12:00:00Z"
+                chunkCount: 5
+                pageCount: 3
+                files:
+                  - name: "file1.pdf"
+                    totalPages: 3
+                    chunksIds: ["chunk1", "chunk2"]
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: "unauthorized"
+                message: "Authentication failed"
+        '404':
+          description: Connection not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: "not_found"
+                message: "Connection Not Found"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: "internal_server_error"
+                message: "An unexpected error occurred"
+    delete:
+      x-method: DELETE
+      tags:
+        - Connections
+      summary: Delete specific connection
+      description: Deletes a connection for the authenticated user, identified by the connection ID. Also deletes associated data from Qdrant.
+      operationId: deleteConnection
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the connection to delete
+          example: "123"
+          schema:
+            type: string
+        - name: wait
+          in: query
+          required: false
+          description: If true, waits for the deletion operation in Qdrant to complete before returning. Defaults to false.
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Connection deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: "ok"
+                message: "Connection has been successfully deleted"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: "unauthorized"
+                message: "Authentication failed"
+        '404':
+          description: Connection not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: "not_found"
+                message: "Connection Not Found"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: "internal_server_error"
+                message: "An unexpected error occurred"
+    put:
+      x-method: PUT
+      tags:
+        - Connections
+      summary: Update specific connection
+      description: Updates a connection for the authenticated user, identified by the connection ID. Processes associated files and links, optionally waiting for processing to complete if specified.
+      operationId: updateConnection
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the connection to update
+          example: "123"
+          schema:
+            type: string
+        - name: wait
+          in: query
+          required: false
+          description: If true, waits for the processing operation to complete before returning. Defaults to false if omitted.
+          schema:
+            type: boolean
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                links:
+                  type: array
+                  items:
+                    type: string 
+                  description: Array of links to process
+                  example: "https://example/file.pdf"
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: Array of files to upload and process
+                  example: "invoice.pdf"
+                metadata:
+                  type: string
+                  description: Optional. A string containing JSON metadata, e.g., "{\"name\":\"mine\"}"
+                  example: "{\"type\":\"my work doc\"}"
+      responses:
+        '200':
+          description: Connection updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              examples:
+                syncCompleted:
+                  summary: Sync completed (wait=true)
+                  value:
+                    code: "ok"
+                    message: "Connection successfully updated"
+                queued:
+                  summary: Queued for processing (wait=false or omitted)
+                  value:
+                    code: "ok"
+                    message: "Connection has been successfully updated and queued for processing."
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              examples:
+                alreadySyncing:
+                  summary: Sync already in progress
+                  value:
+                    code: "already_syncing"
+                    message: "A sync operation is already in progress for this connection"
+                badRequest:
+                  summary: Invalid form data or configuration
+                  value:
+                    code: "bad_request"
+                    message: "Invalid form data"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: "unauthorized"
+                message: "Authentication failed"
+        '404':
+          description: Connection not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: "not_found"
+                message: "Connection Not Found"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              examples:
+                queryError:
+                  summary: Database query failure
+                  value:
+                    code: "internal_server_error"
+                    message: "Failed to load connection"
+                processingError:
+                  summary: Processing or queueing failure
+                  value:
+                    code: "internal_server_error"
+                    message: "An unexpected error occurred"
+
+  /api/connections/{id}/sync:
+    post:
+      x-method: POST
+      tags:
+        - Connections
+      summary: Trigger sync
+      description: Initiates a sync operation for the specified connection. The operation can either wait for the sync to complete or queue it for later processing based on the `wait` query parameter.
+      operationId: syncConnection
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the connection to sync
+          schema:
+            type: string
+        - name: wait
+          in: query
+          required: false
+          description: If `"true"`, waits for the sync operation to complete before returning. Defaults to `"false"` if omitted.
+          schema:
+            type: string
+            enum: ["true", "false"]
+            default: "false"
+      responses:
+        '200':
+          description: Sync operation initiated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              examples:
+                syncCompleted:
+                  summary: Sync completed (wait=true)
+                  value:
+                    code: "ok"
+                    message: "Your file was successfully synced and processed"
+                queued:
+                  summary: Queued for syncing (wait=false or omitted)
+                  value:
+                    code: "ok"
+                    message: "Your file has been successfully queued for syncing"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              examples:
+                configMissing:
+                  summary: Connection not fully configured
+                  value:
+                    code: "config_missing"
+                    message: "This connection is not fully configured"
+                alreadySyncing:
+                  summary: Sync already in progress
+                  value:
+                    code: "already_syncing"
+                    message: "A sync operation is already in progress for this connection"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: "unauthorized"
+                message: "Authentication failed"
+        '404':
+          description: Connection not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: "not_found"
+                message: "Connection Not Found"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              examples:
+                queryError:
+                  summary: Database query failure
+                  value:
+                    code: "internal_server_error"
+                    message: "Failed to load connection status"
+                processingError:
+                  summary: Processing or queueing failure
+                  value:
+                    code: "internal_server_error"
+                    message: "An unexpected error occurred"
+ 
+  /api/connections/{id}/status:
+    get:
+      x-method: GET
+      tags:
+        - Connections
+      summary: Get connection status
+      description: Retrieves the status of a specific connection, including whether its configuration is set and if it is currently syncing.
+      operationId: getConnectionStatus
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the connection to check
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Connection status retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectionStatus'
+              example:
+                status: "ready"
+                isSyncing: false
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: "unauthorized"
+                message: "Authentication failed"
+        '404':
+          description: Connection not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: "not_found"
+                message: "Connection Not Found"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              examples:
+                queryError:
+                  summary: Database query failure
+                  value:
+                    code: "internal_server_error"
+                    message: "Failed to load connection status"
+                unexpectedError:
+                  summary: Unexpected error
+                  value:
+                    code: "internal_server_error"
+                    message: "An unexpected error occurred"
+  # ──────────────────────────────────────────────
+  # Chunks group
+  # ──────────────────────────────────────────────
+  /api/connections/chunks/{ids}:
+    get:
+      x-method: GET
+      tags:
+        - Chunks
+      summary: Retrieve chunks by IDs
+      description: |
+        Given a list of chunk IDs, returns all matching chunks (with payload)
+        that belong to any of the authenticated user's connections.
+      operationId: getChunksByIds
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: ids
+          in: path
+          required: true
+          description: Comma‑separated list of chunk IDs
+          schema:
+            type: string
+            example: "123/456/789"
+      responses:
+        '200':
+          description: A list of chunks matching the requested IDs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChunkResponse'
+        '400':
+          description: Bad request (e.g. malformed `ids` parameter)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: "bad_request"
+                message: "Invalid `ids` parameter"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: "unauthorized"
+                message: "Authentication failed"
+        '404':
+          description: None of the requested chunks were found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: "not_found"
+                message: "Chunks Not Found"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: "internal_server_error"
+                message: "An unexpected error occurred"
+
+  # ──────────────────────────────────────────────
+  # Files group
+  # ──────────────────────────────────────────────
+  /api/files/{id}:
+    get:
+      x-method: GET
+      tags:
+        - Files
+      summary: Retrieve files for connection
+      description: |
+        Fetches files belonging to the authenticated user's connection identified by `{id}`.
+        - If `file_name` is provided, returns that single file (404 if not found).  
+        - Otherwise returns up to `limit` files (or all, if `limit` is omitted).
+      operationId: getFilesByConnection
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the connection
+          schema:
+            type: string
+            example: "123"
+        - name: file_name
+          in: query
+          required: false
+          description: Exact name of a single file to fetch
+          schema:
+            type: string
+            example: "invoice.pdf"
+        - name: limit
+          in: query
+          required: false
+          description: Maximum number of files to return
+          schema:
+            type: integer
+            format: int32
+            example: 10
+      responses:
+        '200':
+          description: File(s) retrieved successfully
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/File'
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/File'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: "unauthorized"
+                message: "Authentication failed"
+        '404':
+          description: No matching file(s) found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: "not_found"
+                message: "File Not Found"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: "internal_server_error"
+                message: "An unexpected error occurred"
+  /api/upload:
+    post:
+      x-method: POST
+      tags:
+        - Connections
+      summary: Create direct‐upload connection
+      description: |
+        Accepts multipart form data to configure a direct‐upload connection for the authenticated user.
+        - If `wait=true`, files are processed immediately before returning.  
+        - Otherwise, files are queued for later processing.
+      operationId: createDirectUploadConnection
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: wait
+          in: query
+          required: false
+          description: Whether to wait for processing to complete (`true`) or queue for later (`false`, default)
+          schema:
+            type: string
+            enum: ["true","false"]
+            default: "false"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                links:
+                  type: array
+                  description: Array of file URLs to import
+                  items:
+                    type: string
+                    format: uri
+                  example:
+                    - "https://example.com/file1.pdf"
+                    - "https://example.com/file2.pdf"
+                files:
+                  type: array
+                  description: Array of files to upload
+                  items:
+                    type: string
+                    format: binary
+                metadata:
+                  type: string
+                  description: JSON string of arbitrary metadata (e.g. `{"name":"invoice"}`)
+                  example: '{"type":"report"}'
+              required:
+                - files
+      responses:
+        '200':
+          description: Upload accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              examples:
+                syncCompleted:
+                  summary: Processed immediately
+                  value:
+                    code: "ok"
+                    message: "Your file was successfully uploaded and processed."
+                queued:
+                  summary: Queued for processing
+                  value:
+                    code: "ok"
+                    message: "Your file has been successfully uploaded and queued for processing."
+        '400':
+          description: Bad request (e.g. malformed form data)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              examples:
+                formError:
+                  summary: Form parsing failed
+                  value:
+                    code: "bad_request"
+                    message: "Invalid form data"
+                configError:
+                  summary: Configuration error
+                  value:
+                    code: "bad_request"
+                    message: "Failed to configure upload connection"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: "unauthorized"
+                message: "Authentication failed"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              examples:
+                processingError:
+                  summary: Immediate processing failed
+                  value:
+                    code: "internal_server_error"
+                    message: "An unexpected error occurred"
+                queueError:
+                  summary: Queueing failed
+                  value:
+                    code: "internal_server_error"
+                    message: "An unexpected error occurred"
+  # ──────────────────────────────────────────────
+  # Retrievals group
+  # ──────────────────────────────────────────────
+  /api/retrievals:
+    post:
+      x-method: POST
+      tags:
+        - Retrievals      
+      summary: Semantic‐vector retrieval
+      description: |
+        Given a natural‐language `query`, retrieves up to `top_chunk` chunks whose embeddings best match.
+        Optionally filters by arbitrary metadata conditions, applies a minimum score threshold, and
+        can rerank using a hypothetical answer embedding.
+      operationId: createRetrieval
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserQuery'
+      responses:
+        '200':
+          description: Retrieved and (optionally) reranked chunks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  scored_chunks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RetrievedChunk'
+                required:
+                  - scored_chunks
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: "Invalid_Query"
+                message:
+                  query:
+                    _errors: ["String must contain at least 2 character(s)"]
+        '401':
+          description: Missing or malformed Authorization header
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: "unauthorized"
+                message: "The requested resource was not found."
+        '403':
+          description: API key not found or user update failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: "forbidden"
+                message: "The requested resource was not found."
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: "internal_server_error"
+                message: "An unexpected error occurred"
+components:
+  schemas:
+    UserQuery:
+      type: object
+      properties:
+        query:
+          type: string
+          description: The user’s natural‐language query (min length 2)
+          minLength: 2
+          example: "What is the capital of France?"
+        top_chunk:
+          type: integer
+          description: Number of chunks to return
+          minimum: 1
+          default: 5
+        filter:
+          $ref: '#/components/schemas/RetrievalFilter'
+        rerank:
+          type: boolean
+          description: If true, rerank top candidates by hypothetical‐answer similarity
+          default: false
+        min_score_threshold:
+          type: number
+          description: Discard chunks with score below this
+          minimum: 0
+      required:
+        - query
+
+    RetrievedChunk:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Chunk identifier
+        document_name:
+          type: string
+        page_number:
+          type: integer
+        chunk_number:
+          type: integer
+        source:
+          type: string
+        title:
+          type: string
+        summary:
+          type: string
+        content:
+          type: string
+        type:
+          type: string
+        metadata:
+          type: object
+        score:
+          type: number
+      required:
+        - id
+        - document_name
+        - page_number
+        - chunk_number
+        - content
+        - score
+
+    RetrievalFilter:
+      type: object
+      description: |
+        Logical combination of conditions. At least one of `must`, `should`, or `must_not` must be non‐empty.
+      properties:
+        must:
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/SpecificCondition'
+              - $ref: '#/components/schemas/RetrievalFilter'
+        should:
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/SpecificCondition'
+              - $ref: '#/components/schemas/RetrievalFilter'
+        must_not:
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/SpecificCondition'
+              - $ref: '#/components/schemas/RetrievalFilter'
+      # no 'required' here because refinement happens in code
+
+    SpecificCondition:
+      oneOf:
+        # Key-based match
+        - type: object
+          properties:
+            key:
+              type: string
+            match:
+              $ref: '#/components/schemas/MatchCondition'
+          required: [key, match]
+        # Key-based range
+        - type: object
+          properties:
+            key:
+              type: string
+            range:
+              $ref: '#/components/schemas/RangeCondition'
+          required: [key, range]
+        # Key-based geo bounding box
+        - type: object
+          properties:
+            key:
+              type: string
+            geo_bounding_box:
+              $ref: '#/components/schemas/GeoBoundingBox'
+          required: [key, geo_bounding_box]
+        # Key-based geo radius
+        - type: object
+          properties:
+            key:
+              type: string
+            geo_radius:
+              $ref: '#/components/schemas/GeoRadius'
+          required: [key, geo_radius]
+        # Key-based geo polygon
+        - type: object
+          properties:
+            key:
+              type: string
+            geo_polygon:
+              $ref: '#/components/schemas/GeoPolygon'
+          required: [key, geo_polygon]
+        # Key-based values_count
+        - type: object
+          properties:
+            key:
+              type: string
+            values_count:
+              $ref: '#/components/schemas/RangeCondition'
+          required: [key, values_count]
+        # is_empty
+        - type: object
+          properties:
+            is_empty:
+              type: object
+              properties:
+                key:
+                  type: string
+              required: [key]
+          required: [is_empty]
+        # is_null
+        - type: object
+          properties:
+            is_null:
+              type: object
+              properties:
+                key:
+                  type: string
+              required: [key]
+          required: [is_null]
+        # has_id
+        - type: object
+          properties:
+            has_id:
+              type: array
+              items:
+                type: integer
+          required: [has_id]
+        # has_vector
+        - type: object
+          properties:
+            has_vector:
+              type: string
+          required: [has_vector]
+        # nested
+        - type: object
+          properties:
+            nested:
+              type: object
+              properties:
+                key:
+                  type: string
+                filter:
+                  $ref: '#/components/schemas/RetrievalFilter'
+              required: [key, filter]
+          required: [nested]
+
+    MatchCondition:
+      type: object
+      description: Match a single value, any of, except, or full‐text
+      oneOf:
+        - type: object
+          properties:
+            value:
+              oneOf:
+                - type: string
+                - type: number
+                - type: boolean
+          required: [value]
+        - type: object
+          properties:
+            any:
+              type: array
+              items:
+                oneOf:
+                  - type: string
+                  - type: number
+          required: [any]
+        - type: object
+          properties:
+            except:
+              type: array
+              items:
+                oneOf:
+                  - type: string
+                  - type: number
+          required: [except]
+        - type: object
+          properties:
+            text:
+              type: string
+          required: [text]
+
+    RangeCondition:
+      type: object
+      description: Numeric or date range; at least one bound required
+      properties:
+        gt:
+          oneOf:
+            - type: number
+            - type: string
+        gte:
+          oneOf:
+            - type: number
+            - type: string
+        lt:
+          oneOf:
+            - type: number
+            - type: string
+        lte:
+          oneOf:
+            - type: number
+            - type: string
+      # refinement happens in code to require at least one
+
+    GeoPoint:
+      type: object
+      properties:
+        lon:
+          type: number
+        lat:
+          type: number
+      required:
+        - lon
+        - lat
+
+    GeoBoundingBox:
+      type: object
+      properties:
+        top_left:
+          $ref: '#/components/schemas/GeoPoint'
+        bottom_right:
+          $ref: '#/components/schemas/GeoPoint'
+      required:
+        - top_left
+        - bottom_right
+
+    GeoRadius:
+      type: object
+      properties:
+        center:
+          $ref: '#/components/schemas/GeoPoint'
+        radius:
+          type: number
+      required:
+        - center
+        - radius
+
+    GeoRing:
+      type: object
+      properties:
+        points:
+          type: array
+          items:
+            $ref: '#/components/schemas/GeoPoint'
+          minItems: 3
+      required:
+        - points
+
+    GeoPolygon:
+      type: object
+      properties:
+        exterior:
+          $ref: '#/components/schemas/GeoRing'
+        interiors:
+          type: array
+          items:
+            $ref: '#/components/schemas/GeoRing'
+      required:
+        - exterior
+    ChunkResponse:
+      type: object
+      properties:
+        chunkId:
+          type: string
+          description: Unique identifier of the chunk
+        fileName:
+          type: string
+          description: Original file name (from payload `_document_id`)
+        source:
+          type: string
+          description: Source of the chunk (from payload `_source`)
+        metadata:
+          type: object
+          description: Arbitrary metadata stored with the chunk
+        pageNumber:
+          type: integer
+          description: Page number within the document
+        dataType:
+          type: string
+          description: Type of the chunk (e.g. "text", "image")
+        chunkTitle:
+          type: string
+          description: Title of the chunk
+        chunkSummary:
+          type: string
+          description: Auto-generated summary of the chunk
+        chunkContent:
+          type: string
+          description: Full textual content of the chunk
+      required:
+        - chunkId
+        - fileName
+        - source
+        - dataType
+        - chunkContent
+    
+    ConnectionStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: ["ready", "config_missing"]
+          description: Indicates whether the connection is fully configured ("ready") or missing configuration ("config_missing")
+        isSyncing:
+          type: boolean
+          description: Indicates whether the connection is currently syncing
+      required:
+        - status
+        - isSyncing
+  
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Status code, e.g., "ok" for success, or error codes like "unauthorized", "not_found", "internal_server_error"
+        message:
+          type: string
+          description: Human-readable message describing the result
+      required:
+        - code
+        - message
+    ConnectionResponse:
+      type: object
+      properties:
+        connectionId:
+          type: string
+          description: Unique identifier for the connection
+        identifier:
+          type: string
+          description: Human-readable identifier for the connection
+        source:
+          type: string
+          description: The service/source of the connection (e.g., google_drive, dropbox)
+        sourceFolder:
+          type: string
+          description: The folder name associated with the connection
+        metadata:
+          type: object
+          description: Additional metadata for the connection, parsed from JSON
+        isConfigSet:
+          type: boolean
+          description: Indicates if the connection configuration is set
+        lastSynced:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp of the last synchronization
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp of when the connection was created
+        chunkCount:
+          type: integer
+          description: Total number of chunks across all files in the connection
+        pageCount:
+          type: integer
+          description: Total number of pages across all files in the connection
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/File'
+          description: List of files associated with the connection
+      required:
+        - connectionId
+        - identifier
+        - source
+        - sourceFolder
+        - isConfigSet
+        - createdAt
+        - chunkCount
+        - pageCount
+        - files
+    File:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the file
+        totalPages:
+          type: integer
+          description: Total number of pages in the file
+        chunksIds:
+          type: array
+          items:
+            type: string
+          description: Array of chunk identifiers for the file
+      required:
+        - name
+        - totalPages
+        - chunksIds
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Error code indicating the type of error
+        message:
+          type: string
+          description: Human-readable error message
+      required:
+        - code
+        - message
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Bearer token authentication required
