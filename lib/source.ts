@@ -6,6 +6,7 @@ export const source = loader({
   baseUrl: '/docs',
   source: createMDXSource(docs, meta),
   pageTree: {
+   // @ts-expect-error: Mismatched types due to multiple fumadocs-core versions
     attachFile,
   }
 });
