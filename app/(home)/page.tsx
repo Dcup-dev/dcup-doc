@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { cva } from 'class-variance-authority';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism';
-import { FaDatabase, FaGithub, FaGoogleDrive } from "react-icons/fa";
+import { FaAws, FaDatabase, FaDropbox, FaGithub, FaGoogleDrive, FaCloud } from "react-icons/fa";
 import { AiFillOpenAI } from "react-icons/ai";
 import { DiRedis } from "react-icons/di";
 import {
@@ -55,6 +55,12 @@ export default async function HomePage() {
               Any tool that works with data
               <br />
               Should be fully Open Source
+              <br />
+              <span  className="text-2xl italic bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+                Dcup is 100% open-source
+                <br />
+                no black boxes, no vendor lock-in.
+              </span>
             </h2>
           </div>
         </div>
@@ -71,9 +77,9 @@ function Hero() {
           🚀 Open Source, Now and Forever
         </div>
         <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
-          Build Smarter AI Applications
+          Build Smarter AI with
           <br />
-          with <span className="bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">Open-Source RAG</span>
+          <span className="bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">Open-Source RAG-as-a-Service</span>
         </h1>
         <p className="mb-8 text-fd-muted-foreground md:max-w-[80%] md:text-xl">
           Connect your app to user data in minutes with self-hostable RAG pipelines.
@@ -84,7 +90,7 @@ function Hero() {
       <div className="inline-flex flex-col gap-4 sm:flex-row max-md:mx-auto">
         <Button asChild size='lg' >
           <Link
-            href="/docs"
+            href="https://app.dcup.dev/"
           >
             <RocketIcon className="h-5 w-5" />
             Get Started
@@ -156,10 +162,12 @@ function Introduction(): React.ReactElement {
         <h3 className="text-2xl font-semibold">Ingest & Connect</h3>
         <p className="text-muted-foreground">
           Seamlessly integrate with data sources using our pre-built connectors.
-          Automatically sync documents from Google Drive ( more will add soon ).
+          Automatically sync documents from Google Drive, Dropbox, AWS ( more will add soon ).
         </p>
         <div className="mt-4 p-4 flex gap-4">
           <FaGoogleDrive className="h-6 w-6 text-primary" />
+          <FaDropbox className='h-6 w-6 text-primary' />
+          <FaAws className='h-6 w-6 text-primary' />
           <p>More soon..</p>
         </div>
       </div>
@@ -250,9 +258,9 @@ function Introduction(): React.ReactElement {
       <div className="col-span-full grid grid-cols-2 gap-8 border-t p-8 md:grid-cols-4 md:p-12">
         {[
           {
-            title: "Open Source",
-            icon: <FaGithub className="h-6 w-6" />,
-            description: "Apache 2.0 License"
+            title: "Cloud Version",
+            icon: <FaCloud className="h-6 w-6" />,
+            description: "Hosted solution, No setup required"
           },
           {
             title: "Scalable",

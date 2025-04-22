@@ -1,6 +1,6 @@
 ---
-title: Get Started with Dcup
-description: This guide will help you set up Dcup—your self-hostable RAG-as-a-Service platform—and show you how to interact with its Retrieval API using JavaScript. (Cloud version coming soon!)
+title: Self-Host Dcup
+description: This guide will help you set up Dcup—your self-hostable RAG-as-a-Service platform—and show you how to interact with its Retrieval API using JavaScript
 ---
 # 1. Installation
 ## Prerequisites
@@ -37,8 +37,6 @@ The intuitive UI is designed to help you manage your data ingestion, chunking, a
 ## How the Pipeline Works
 ### Data Ingestion:
 Connect to data sources like Google Drive. New files are automatically fetched, and you can attach metadata or set limits on the number of files/pages to process.
-
-#### IMAGES
 
 ### Chunking & Embedding:
 In the background, Dcup reads each file, splits it into chunks, and sends each chunk to OpenAI for generating a title, summary, and embeddings.

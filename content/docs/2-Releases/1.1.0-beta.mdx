@@ -1,0 +1,56 @@
+---
+title: 1.1.0-beta
+description: The Dcup v1.1.0-beta release is a major step forward, bringing seamless integrations with AWS S3 and Dropbox, a new Direct File Upload option, a dedicated Query Page, and a robust set of Ingestion API Endpoints. Alongside these, significant code refactoring and bug fixing efforts have enhanced performance and stability. Below are the details of each update you’ve made.
+---
+
+## New Features & Integrations
+**1. AWS S3 Integration**: Users can now connect an S3 bucket, browse objects, and ingest files with functionality mirroring Google Drive.
+- AWS Authentication: Securely connect using AWS credentials. 
+- AWS Folder Picker: Browse and select specific buckets or folders for ingestion.
+- AWS File Processing: Automatically process and index files from S3 buckets.
+
+**2. Dropbox Integration**: Users can link their Dropbox accounts to Dcup, enjoying the same capabilities as with Google Drive.
+- Dropbox Authentication: Securely connect your Dropbox account.
+- Dropbox Folder Picker: Choose specific folders to ingest.
+- Dropbox File Processing: Automatically process and index Dropbox files. 
+
+**3. Direct File Upload Option**: A native file upload feature now allows users to upload files directly via the Dcup UI.
+- Native Upload Feature: Upload files straight from your device.
+- Connection Set for Direct Upload: Organize and manage uploaded files within a connection.
+- Add & Delete Files: Easily add new files or remove existing ones from the connection.
+- Dashboard Display: Uploaded files are visible and manageable in the Dcup dashboard.
+
+**4. Query Page**: A new page dedicated to querying data, complete with search and filtering capabilities.
+- Search Input: Enter queries effortlessly.
+- Filtering Options: Refine results using API-supported filters. 
+- Results Window: View organized, easy-to-read search results.
+
+**5. Comprehensive Ingestion API Endpoints**: A full suite of API endpoints to give users complete control over data ingestion.  
+- **GET Endpoints**:
+  - Retrieve all connections. 
+  - Fetch a specific connection by ID.
+  - Get all files associated with a connection ID.
+  - Access specific file chunk data by chunk_id.
+
+- **POST Endpoints**: 
+  - Create a new direct upload connection.  
+  - Sync an existing connection by connection_id.
+
+- **PUT Endpoint**:
+  - Update connection details and add new files to direct upload connections.
+
+- **DELETE Endpoints**:
+  - Remove specific files from a connection by connection ID and file name. 
+  - Delete an entire connection by ID.
+
+#### Improvements
+  - Code Refactoring
+  - Extensive updates to the codebase for better performance, scalability, and maintainability.
+  - Optimized ingestion and retrieval processes to enhance efficiency.
+#### Bug Fixing
+  - Addressed multiple bugs to improve stability and ensure a smoother user experience across all features.
+
+### Final Thoughts
+With Dcup v1.1.0-beta, you’ve added incredible flexibility and power, making it easier for users to manage and process their data from multiple sources. The refactoring and bug fixes further solidify its reliability. Great work—this release is a fantastic milestone! Let me know if you’d like to tweak anything in these notes.
+
+

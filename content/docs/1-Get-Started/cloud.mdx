@@ -1,0 +1,56 @@
+---
+title: Cloud Dcup
+description: Welcome to Dcup! This guide will walk you through creating an account, setting up a connection to your data (like Google Drive, Dropbox, AWS, or direct uploads), and configuring it to work with your files. Let’s get started!
+---
+
+## Step 1: Create an Account
+### Visit the App: Go to app.dcup.dev and Sign Up
+[app.dcup.dev](https://app.dcup.dev)
+#### Once you’re in, you’re ready to start connecting your data!
+
+## Step 2: Go to Connections
+-  Head to app.dcup.dev/connections.
+#### This is where you’ll see any existing connections and create new ones.
+
+
+## Step 3: Create a New Connection
+### Start a Connection: On the connections page, click "New Connection".
+#### Pick Your Source: Choose where your data lives:
+- Google Drive: You’ll be asked to log in and let Dcup access your Drive.
+- Dropbox: Same deal—log in and link your Dropbox account.
+- AWS: Enter your AWS details to connect to your S3 buckets.
+- Direct Upload: Upload files straight from your computer to Dcup’s vector database.
+
+
+## Step 4: Configure the Connection
+### Now, set up your connection so it works just the way you want:
+- Give It a Unique Name: Type in a name that’s easy to recognize, like "Marketing Docs" or "AWS Project Files".
+- Choose Your Source Details:
+  - Google Drive or Dropbox: Pick the folder you want to connect.
+  - AWS: Select the S3 bucket you’re using and folder.
+  - Direct Upload: Your uploaded files are already set here.
+- Add Metadata: Add tags or labels (like "team":"design") to make searching easier later.
+- Set Limits:
+  - Decide how many files and folders to process. This keeps things manageable—start small if you’re unsure!
+
+Review: Double-check your settings.
+
+## Step 5: Save and Let It Run
+- Save It: Click "Save" to lock in your connection.
+- Background Magic: The app will start processing your files in the background—chunking them, embedding them, and storing them in the vector database.
+- Keep Going: You don’t have to wait; you can use the app while it works.
+- You’ll get a heads-up when it’s done!
+
+## Step 6: Sync New Files
+#### Added new files to your Google Drive, Dropbox, AWS bucket, or want to upload more? Keep your connection fresh:
+- Back to Connections: Go to app.dcup.dev/connections.
+- Find Your Connection: Look for the one you want to sync.
+- Sync It: Hit the "Sync" button to process the new files.
+- Updated: The new stuff will be added to your vector database.
+
+#### Repeat this whenever you add more files!
+
+## What’s Next?
+You’re all set! Your data is connected, processed, and ready to use. Want to search or do more with it? 
+- Go to query page and make search , you can use filter to narrow your search more
+- Use api : refer to [Retrieval API](https://dcup.dev/docs/API-Reference/retrievals/create-retrieval)
