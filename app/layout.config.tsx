@@ -13,7 +13,7 @@ export const baseOptions: BaseLayoutProps = {
     enableSearch: true,
     enabled: false,
     transparentMode: "always",
-    children: <Logo href='/'/>
+    children: <Logo/>
   },
   links: [
     {

@@ -16,14 +16,16 @@ import { FaGithub } from "react-icons/fa";
 export function Navbar() {
   const navLinks = [
     { name: "Docs", href: "/docs" },
-    { name: "Contact", href: "/contact" }
+    { name: "Contact", href: "/contact" },
+    { name: "Price", href: "/price" },
+    { name: "Terms of Service", href: "/terms_of_service_and_privacy_policy" }
   ];
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
         <div className="flex items-center">
-          <Logo href={"/"} />
+          <Logo />
         </div>
         <Sheet>
           <SheetTrigger className="md:hidden">
@@ -32,7 +34,7 @@ export function Navbar() {
           <SheetContent>
             <SheetHeader>
               <SheetTitle>
-                <Logo href="/" />
+                <Logo />
               </SheetTitle>
             </SheetHeader>
 
