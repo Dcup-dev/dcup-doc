@@ -18,6 +18,7 @@ import {
   CheckIcon,
   DatabaseIcon
 } from 'lucide-react';
+import { Producthunt } from '../Producthunt';
 
 
 
@@ -56,7 +57,7 @@ export default async function HomePage() {
               <br />
               Should be fully Open Source
               <br />
-              <span  className="text-2xl italic bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+              <span className="text-2xl italic bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
                 Dcup is 100% open-source
                 <br />
                 no black boxes, no vendor lock-in.
@@ -73,14 +74,16 @@ function Hero() {
   return (
     <div className="relative z-[2] flex flex-col border-x border-t bg-fd-card/80 px-6 pt-12 max-md:text-center md:px-12 md:pt-16 [.uwu_&]:hidden max-lg:overflow-hidden">
       <div className="mb-8 space-y-4">
-        <div className="inline-flex items-center rounded-full border bg-background px-4 py-1 text-sm text-muted-foreground max-md:mx-auto">
+        <div className="inline-flex items-center rounded-full border bg-background px-4 py-1 mb-3 text-sm text-muted-foreground max-md:mx-auto">
           🚀 Open Source, Now and Forever
         </div>
+        <Producthunt />
         <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
           Build Smarter AI with
           <br />
           <span className="bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">Open-Source RAG-as-a-Service</span>
         </h1>
+
         <p className="mb-8 text-fd-muted-foreground md:max-w-[80%] md:text-xl">
           Connect your app to user data in minutes with self-hostable RAG pipelines.
           Harness AI-powered retrieval with enterprise-grade scalability.
