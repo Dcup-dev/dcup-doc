@@ -1,0 +1,19 @@
+{
+  "title": "Get Started",
+  "pages": [
+    "index",
+    "How-It-Works",
+    "Contributing-to-Dcup",
+    "---Get Started---",
+    "cloud",
+    "self-hosting",
+    "---API Documentation---",
+    "connections",
+    "files",
+    "chunks",
+    "retrievals",
+    "---Releases---",
+    "...Releases"
+  ],
+  "defaultOpen": true
+}
