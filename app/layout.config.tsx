@@ -8,12 +8,12 @@ import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
  * Home Layout: app/(home)/layout.tsx
  * Docs Layout: app/docs/layout.tsx
  */
-export const baseOptions: BaseLayoutProps = { 
+export const baseOptions: BaseLayoutProps = {
   nav: {
     enableSearch: true,
     enabled: false,
     transparentMode: "always",
-    children: <Logo/>
+    children: <Logo />
   },
   links: [
     {
@@ -22,5 +22,5 @@ export const baseOptions: BaseLayoutProps = {
       active: 'nested-url',
     },
   ],
-  
+  disableThemeSwitch: true
 };

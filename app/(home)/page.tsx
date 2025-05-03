@@ -5,9 +5,8 @@ import Image from 'next/image';
 import { cva } from 'class-variance-authority';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism';
-import { FaAws, FaDatabase, FaDropbox, FaGithub, FaGoogleDrive, FaCloud } from "react-icons/fa";
-import { AiFillOpenAI } from "react-icons/ai";
-import { DiRedis } from "react-icons/di";
+import { FaAws, FaDropbox, FaGithub, FaGoogleDrive, FaCloud } from "react-icons/fa";
+import { FiArrowRight, FiCpu, FiDatabase, FiDownload, FiInfo, FiSearch, FiZap } from "react-icons/fi";
 import {
   RocketIcon,
   CodeIcon,
@@ -19,6 +18,8 @@ import {
   DatabaseIcon
 } from 'lucide-react';
 import { Producthunt } from '../Producthunt';
+import { PaymentProvider } from '@/context/PaymentContext';
+import { PricingDetails } from '@/components/Pricing/Pricing';
 
 
 
@@ -45,6 +46,11 @@ export default async function HomePage() {
           </div>
           <Introduction />
           <Architecture />
+          <div className='pt-14 px-5  border-x border-t'>
+            <PaymentProvider redirectTo='https://app.dcup.dev'>
+              <PricingDetails />
+            </PaymentProvider>
+          </div>
           <div
             className="relative overflow-hidden border-x border-t px-8 py-16 sm:py-24"
             style={{
@@ -298,62 +304,98 @@ function Introduction(): React.ReactElement {
 
 function Architecture() {
   return (
-    <div className="flex flex-col gap-12 border-x border-t bg-background px-8 py-16 md:flex-row md:px-12 md:py-24">
-      <div className="flex-1 space-y-8">
-        <div className="space-y-4">
-          <span className="inline-block rounded-full bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
+    <section className="relative bg-background py-24 px-4 sm:px-8  border-x border-t">
+      <div className="mx-auto max-w-7xl">
+        <div className="text-center mb-20 space-y-4">
+          <span className="inline-block bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium animate-fade-in">
             Modular Architecture
           </span>
-          <h2 className="text-3xl font-bold tracking-tight">
-            Powered by Modern AI Stack
+          <h2 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+            Intelligent Data Pipeline
           </h2>
-          <p className="text-muted-foreground text-lg">
-            Dcup combines cutting-edge technologies to deliver production-ready RAG capabilities.
-            Built on OpenAI for intelligence, Qdrant for speed, and Redis for reliability.
-          </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-3">
+        <div className="grid gap-16 md:grid-cols-4">
           {[
             {
-              name: "OpenAI",
-              icon: <AiFillOpenAI className="h-8 w-8" />,
-              role: "AI Processing",
-              description: "Advanced embeddings and query expansion using text-embedding-3 model",
-              color: "text-[#412991]"
+              title: "Data Ingestion",
+              icon: <FiDownload className="h-8 w-8" />,
+              color: "text-blue-500",
+              description: "Connect multiple sources with automatic syncing"
             },
             {
-              name: "Qdrant",
-              icon: <FaDatabase className="h-8 w-8" />,
-              role: "Vector Engine",
-              description: "Blazing-fast vector similarity search at scale",
-              color: "text-[#2d5b8a]"
+              title: "AI Processing",
+              icon: <FiCpu className="h-8 w-8" />,
+              color: "text-purple-500",
+              description: "Smart chunking & OpenAI embeddings"
             },
             {
-              name: "Redis",
-              icon: <DiRedis className="h-8 w-8" />,
-              role: "Real-time Cache",
-              description: "Metadata storage and low-latency retrieval caching",
-              color: "text-[#d82c20]"
+              title: "Vector Storage",
+              icon: <FiDatabase className="h-8 w-8" />,
+              color: "text-green-500",
+              description: "Blazing-fast indexing with Qdrant"
+            },
+            {
+              title: "Smart Retrieval",
+              icon: <FiSearch className="h-8 w-8" />,
+              color: "text-orange-500",
+              description: "Hybrid search & context-aware responses"
             }
-          ].map((tech) => (
-            <div key={tech.name} className="space-y-4">
-              <div className={`flex items-center gap-3 ${tech.color}`}>
-                <div className="rounded-lg bg-background p-2">
-                  {tech.icon}
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold">{tech.name}</h3>
-                  <p className="text-sm text-muted-foreground">{tech.role}</p>
+          ].map((step, idx) => (
+            <div
+              key={idx}
+              className="group relative overflow-hidden rounded-2xl bg-card p-8 shadow-lg transition-all hover:shadow-xl hover:-translate-y-2 animate-slide-up"
+              style={{ animationDelay: `${idx * 100}ms` }}
+            >
+              <div className={`mb-6 ${step.color} transition-colors group-hover:text-primary`}>
+                <div className="rounded-xl bg-background p-4 w-fit">
+                  {step.icon}
                 </div>
               </div>
-              <p className="text-muted-foreground text-sm">
-                {tech.description}
-              </p>
+              <h3 className="text-xl font-semibold mb-2">{step.title}</h3>
+              <p className="text-muted-foreground text-sm">{step.description}</p>
+
+              {/* Animated hover line */}
+              <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
           ))}
         </div>
+
+        {/* Animated process visualization */}
+        <div className="mt-24 hidden md:block">
+          <div className="relative h-32">
+            <div className="absolute inset-0 flex items-center justify-between px-12">
+              {[...Array(3)].map((_, i) => (
+                <div
+                  key={i}
+                  className="h-1 w-1/3 bg-gradient-to-r from-primary/30 to-purple-500/30 absolute top-1/2 left-0 -translate-y-1/2"
+                  style={{ width: `${100 - i * 10}%`, left: `${i * 5}%` }}
+                />
+              ))}
+
+              <div className="absolute inset-0 flex items-center justify-between">
+                {["Data Source", "Processing", "Storage", "Answer"].map((label, i) => (
+                  <div key={i} className="flex flex-col items-center">
+                    <div className="h-8 w-8 bg-primary rounded-full flex items-center justify-center text-secondary mb-2 animate-pulse-slow">
+                      {i === 3 ? <FiZap /> : <FiArrowRight />}
+                    </div>
+                    <span className="text-sm text-muted-foreground">{label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-20 text-center">
+          <Button variant="outline" className="gap-2" asChild >
+            <Link href={"/docs/How-It-Works"}>
+              <FiInfo className="h-4 w-4" />
+              Explore Technical Details
+            </Link>
+          </Button>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

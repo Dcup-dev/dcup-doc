@@ -12,7 +12,7 @@ type PaymentContextType = {
 
 export const PaymentContext = createContext<PaymentContextType | null>(null);
 
-export const PaymentProvider = ({ children }: { children: ReactNode }) => {
+export const PaymentProvider = ({ redirectTo, children }: { redirectTo?: string, children: ReactNode }) => {
   const [paddle, setPaddle] = useState<Paddle>();
   const { push } = useRouter()
   const [err, setError] = useState<string | null>(null)
@@ -97,6 +97,7 @@ export const PaymentProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const paddlePay = (plan: keyof typeof Plans) => {
+    if (redirectTo) return push(redirectTo)
     switch (plan) {
       case 'BASIC':
         return openBasicCheckout()

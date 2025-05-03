@@ -81,6 +81,9 @@ export default function Layout({ children }: { children: ReactNode }) {
               ['Docs', '/docs'],
             ],
           }}
+          theme={{
+            defaultTheme: 'dark',
+          }}
         >
           {children}
         </RootProvider>
