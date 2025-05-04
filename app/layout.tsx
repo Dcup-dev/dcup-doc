@@ -79,6 +79,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             links: [
               ['Home', '/'],
               ['Docs', '/docs'],
+              ['Blogs', '/blog']
             ],
           }}
           theme={{

@@ -21,6 +21,11 @@ export const baseOptions: BaseLayoutProps = {
       url: '/docs',
       active: 'nested-url',
     },
+    {
+      text: "Blogs",
+      url: '/blog',
+      active: 'nested-url'
+    }
   ],
   disableThemeSwitch: true
 };

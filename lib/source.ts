@@ -1,4 +1,4 @@
-import { docs, meta } from '@/.source';
+import { docs, meta, blogPosts } from '@/.source';
 import { createMDXSource } from 'fumadocs-mdx';
 import { loader } from 'fumadocs-core/source';
 import { createOpenAPI, attachFile } from 'fumadocs-openapi/server';
@@ -19,4 +19,9 @@ export const openapi = createOpenAPI({
       light: 'vitesse-light',
     },
   },
+});
+
+export const blog = loader({
+  baseUrl: '/blog',
+  source: createMDXSource(blogPosts, []),
 });

@@ -16,6 +16,7 @@ import { FaGithub } from "react-icons/fa";
 export function Navbar() {
   const navLinks = [
     { name: "Docs", href: "/docs" },
+    { name: "Blogs", href: "/blog" },
     { name: "Contact", href: "/contact" },
     { name: "Terms of Service", href: "/terms_of_service_and_privacy_policy" }
   ];
