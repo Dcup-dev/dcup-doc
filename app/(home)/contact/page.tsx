@@ -47,7 +47,7 @@ export default function ContactUs() {
     <Card className="w-full max-w-xl mx-auto my-14 p-4">
       <CardHeader>
         <CardTitle className="text-2xl">Contact Support</CardTitle>
-       <CardDescription className="text-lg">
+        <CardDescription className="text-lg">
           We&apos;re here to help. Send us a message and we&apos;ll get back to you as
           soon as possible.
         </CardDescription>
@@ -58,6 +58,7 @@ export default function ContactUs() {
             <Label htmlFor="name">Name</Label>
             <Input
               id="name"
+              name="user_name"
               type="text"
               placeholder="Your Name"
               required
@@ -69,6 +70,7 @@ export default function ContactUs() {
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
+              name="user_email"
               type="email"
               placeholder="Your Email"
               required
@@ -80,6 +82,7 @@ export default function ContactUs() {
             <Label htmlFor="message">Message</Label>
             <Textarea
               id="message"
+              name="message"
               placeholder="Your Message"
               required
               disabled={loading}
