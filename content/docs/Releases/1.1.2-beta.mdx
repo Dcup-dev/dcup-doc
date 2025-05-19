@@ -1,0 +1,30 @@
+---
+title: 1.1.2-beta
+description: This beta release focuses on squashing bugs, expanding the test suite (unit & end‑to‑end), and introducing the new endpoint.
+---
+
+## 🚀 New Features
+### File Deletion API
+Added DELETE /api/connections/id/files to remove one or more files from a connection, with synchronous or queued vector cleanup.
+
+## ✅ Testing & Quality
+### Unit Tests
+- Added comprehensive unit tests covering core logic, Google Drive integration, and Dropbox flows.
+- Ensured 100% coverage on all critical modules.
+
+### End‑to‑End (E2E) Tests
+- Set up Cypress-based E2E suite to validate real‑world flows across Google Drive and Dropbox.
+- All existing user journeys now verified under CI.
+
+## 🐛 Bug Fixes
+### Authentication & Login
+- Fixed login redirect issue where sessions were dropped on page navigation (#86).
+### Progress Reporting
+- Corrected progress‐bar updates when navigating between pages (#89, #93).
+### Google Drive
+- Resolved intermittent failures sending OAuth tokens to Drive API (#85).
+- Removed obsolete “cloud” flag for Google Drive in settings (#106).
+### Dropbox
+- Added end‑to‑end tests to catch and fix file‑sync edge cases (#105).
+### Core Refactoring
+- Stabilized database connection pooling and improved error handling in query layer (#101).

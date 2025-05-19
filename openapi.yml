@@ -477,6 +477,101 @@ paths:
                   value:
                     code: "internal_server_error"
                     message: "An unexpected error occurred"
+
+  /api/connections/{id}/files:
+    delete:
+      x-method: DELETE
+      tags:
+        - Connections
+      summary: Delete file(s) from a connection
+      description: >
+        Deletes one or more files from the specified connection. Provide either
+        a single `file` name or an array of `files`, but not both. The deletion
+        from the primary database is immediate; associated vectors in Qdrant
+        will be removed synchronously by default, or queued if `wait=false`.
+      operationId: deleteConnectionFiles
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the connection.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FileDeletionRequest'
+            example:
+              # Valid format 1: single file
+              file: "document.pdf"
+              # Valid format 2: multiple files
+              # files: ["doc1.pdf", "doc2.pdf"]
+      responses:
+        '200':
+          description: Files deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: "ok"
+                message: "Deleted 'document.pdf' successfully"
+        '400':
+          description: Invalid request payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: "invalid_request"
+                message: "Must provide either 'file' or 'files' field"
+                example:
+                  validFormat1: { file: "document.pdf" }
+                  validFormat2: { files: ["doc1.pdf","doc2.pdf"] }
+        '401':
+          description: Authentication failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: "unauthorized"
+                message: "Authentication failed"
+        '403':
+          description: Connection not found or access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                code: "unauthorized"
+                message: "Connection not found or access denied"
+        '500':
+          description: Server error during deletion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              examples:
+                deletionFailed:
+                  summary: Database deletion failure
+                  value:
+                    code: "deletion_failed"
+                    message: "Failed to remove file(s) from database"
+                vectorCleanupFailed:
+                  summary: Qdrant vector cleanup failure
+                  value:
+                    code: "vector_cleanup_failed"
+                    message: "Failed to delete associated vector data"
+                unexpectedError:
+                  summary: Unexpected error
+                  value:
+                    code: "internal_server_error"
+                    message: "An unexpected error occurred"                  
   # ──────────────────────────────────────────────
   # Chunks group
   # ──────────────────────────────────────────────
@@ -810,6 +905,33 @@ paths:
                 message: "An unexpected error occurred"
 components:
   schemas:
+    FileDeletionRequest:
+      type: object
+      oneOf:
+        - required: ["file"]
+          properties:
+            file:
+              type: string
+              minLength: 2
+              description: Single file name to delete.
+        - required: ["files"]
+          properties:
+            files:
+              type: array
+              items:
+                type: string
+                minLength: 2
+              description: Array of file names to delete.
+      description: Provide exactly one of `file` or `files`.
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Machine-readable status code
+        message:
+          type: string
+          description: Human-readable message
     UserQuery:
       type: object
       properties:
@@ -1155,19 +1277,18 @@ components:
       required:
         - status
         - isSyncing
-  
-    ApiResponse:
-      type: object
-      properties:
+      ApiResponse:
+        type: object
+        properties:
         code:
           type: string
           description: Status code, e.g., "ok" for success, or error codes like "unauthorized", "not_found", "internal_server_error"
         message:
           type: string
           description: Human-readable message describing the result
-      required:
-        - code
-        - message
+        required:
+          - code
+          - message
     ConnectionResponse:
       type: object
       properties:

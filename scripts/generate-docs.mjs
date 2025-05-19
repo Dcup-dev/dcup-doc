@@ -2,7 +2,7 @@ import { generateFiles } from 'fumadocs-openapi';
 
 void generateFiles({
   input: ['./openapi.yml'], // the OpenAPI schemas
-  output: './content/docs/API-Reference',
+  output: './content/docs',
   per: 'operation',
   groupBy: 'tag',
   addGeneratedComment: true,
