@@ -17,7 +17,6 @@ import {
   CheckIcon,
   DatabaseIcon
 } from 'lucide-react';
-import { Producthunt } from '../Producthunt';
 import { PaymentProvider } from '@/context/PaymentContext';
 import { PricingDetails } from '@/components/Pricing/Pricing';
 
@@ -83,7 +82,6 @@ function Hero() {
         <div className="inline-flex items-center rounded-full border bg-background px-4 py-1 mb-3 text-sm text-muted-foreground max-md:mx-auto">
           🚀 Open Source, Now and Forever
         </div>
-        <Producthunt />
         <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
           Build Smarter AI with
           <br />
