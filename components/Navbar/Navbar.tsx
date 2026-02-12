@@ -59,7 +59,7 @@ export function Navbar() {
                   className="bg-gradient-to-r from-pink-600 to-blue-600 text-white hover:from-pink-700 hover:to-blue-700 font-extrabold"
                   asChild
                 >
-                  <Link href={"/docs"}>
+                  <Link href={"/coming-soon"}>
                     Get Started
                     <ArrowRight className="h-4 w-4" />
                   </Link>
@@ -99,7 +99,7 @@ export function Navbar() {
               className="bg-gradient-to-r from-pink-600 to-blue-600 text-white hover:from-pink-700 hover:to-blue-700 font-extrabold"
               asChild
             >
-              <Link href={"https://app.dcup.dev/"}>
+              <Link href={"/coming-soon"}>
                 Get Started
                 <ArrowRight className="h-4 w-4" />
               </Link>

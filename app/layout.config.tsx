@@ -27,5 +27,4 @@ export const baseOptions: BaseLayoutProps = {
       active: 'nested-url'
     }
   ],
-  disableThemeSwitch: true
 };

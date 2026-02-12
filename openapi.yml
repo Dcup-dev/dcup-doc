@@ -3,7 +3,7 @@ info:
   title: Dcup API
   version: 1.0.0
 servers:
-  - url: https://app.dcup.dev
+  - url: https://dcup.dev
 
 tags:
   - name: Connections

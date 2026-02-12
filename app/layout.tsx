@@ -71,7 +71,9 @@ export default function Layout({ children }: { children: ReactNode }) {
       lang="en"
       className={`${GeistSans.variable} ${GeistMono.variable}`}
       suppressHydrationWarning
-    >
+    ><head>
+        <meta name="apple-mobile-web-app-title" content="Dcup" />
+      </head>
       <GoogleAnalyticsScript />
       <body className="flex flex-col min-h-screen">
         <RootProvider
