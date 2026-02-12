@@ -18,20 +18,13 @@ export default async function Page(props: {
   const MDX = page.data.body;
 
   return (
-    <div className="animate-[fadeSlideIn_0.6s_ease-out]">
-      <div className="mb-6 rounded-2xl border bg-gradient-to-r from-primary/10 via-background to-blue-500/10 p-6">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-primary">Documentation</p>
-        <h1 className="text-2xl font-bold md:text-3xl">Learn. Build. Ship faster with Dcup.</h1>
-      </div>
-
-      <DocsPage toc={page.data.toc} full={page.data.full}>
-        <DocsTitle>{page.data.title}</DocsTitle>
-        <DocsDescription>{page.data.description}</DocsDescription>
-        <DocsBody className="prose-a:text-primary prose-headings:scroll-mt-24">
-          <MDX components={getMDXComponents()} />
-        </DocsBody>
-      </DocsPage>
-    </div>
+    <DocsPage toc={page.data.toc} full={page.data.full}>
+      <DocsTitle>{page.data.title}</DocsTitle>
+      <DocsDescription>{page.data.description}</DocsDescription>
+      <DocsBody>
+        <MDX components={getMDXComponents()} />
+      </DocsBody>
+    </DocsPage>
   );
 }
 

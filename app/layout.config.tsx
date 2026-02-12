@@ -3,25 +3,29 @@ import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 
 /**
  * Shared layout configurations
+ *
+ * you can configure layouts individually from:
+ * Home Layout: app/(home)/layout.tsx
+ * Docs Layout: app/docs/layout.tsx
  */
 export const baseOptions: BaseLayoutProps = {
   nav: {
     enableSearch: true,
-    enabled: true,
-    transparentMode: 'top',
-    children: <Logo />,
+    enabled: false,
+    transparentMode: "always",
+    children: <Logo />
   },
   links: [
     {
-      text: 'Docs',
+      text: 'Documentation',
       url: '/docs',
       active: 'nested-url',
     },
     {
-      text: 'Blog',
+      text: "Blogs",
       url: '/blog',
-      active: 'nested-url',
-    },
+      active: 'nested-url'
+    }
   ],
-  disableThemeSwitch: true,
+  disableThemeSwitch: true
 };
