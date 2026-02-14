@@ -1,0 +1,129 @@
+---
+title: "Open Source Alternative to Elephas: Why I'm Building Dcup for Cross-Platform Document Intelligence"
+description: "Dcup is an open-source AI knowledge assistant that works on Windows, Linux, and Mac. Half the price of Elephas ($19 vs $40/month) with better document understanding."
+date: "2026-02-15"
+author: "Ali Amer"
+---
+
+If you've been searching for an **Elephas alternative** that works on Windows, Linux, and any browser—not just Mac—you've found it. I'm building **Dcup**, an open-source AI knowledge assistant that costs half the price and works everywhere.
+
+## Why Another AI Knowledge Assistant?
+
+I loved the idea of [Elephas](https://elephas.app/)—an AI that searches your documents and never forgets what you've learned. But three problems stopped me:
+
+1. **Mac-only**: No Windows or Linux support
+2. **Expensive**: $40/month is steep for indie developers
+3. **Closed source**: You can't verify what happens to your data
+
+So I'm building **Dcup**: an open-source, cross-platform alternative that runs in your browser and costs $19/month (or free if you self-host).
+
+## Dcup vs Elephas vs NotebookLM: Feature Comparison
+
+| Feature | Elephas | NotebookLM | Dcup |
+|---------|---------|------------|------|
+|  **Price** | $40/month | Free | **$19/month** ⭐ |
+|  **Windows support** | ❌ | ✅ | ✅ |
+|  **Linux support** | ❌ | ✅ | ✅ |
+|  **Mac support** | ✅ | ✅ | ✅ |
+|  **Mobile support** | iOS only | Partial | ✅ PWA (All platforms) |
+|  **Open source** | ❌ | ❌ | **✅** ⭐ |
+|  **Self-host option** | ❌ | ❌ | **✅** ⭐ |
+|  **Offline mode** | ✅ | ❌ | ✅ |
+|  **API access** | ❌ | Limited | **✅** ⭐ |
+|  **Data privacy** | Vendor-hosted | Google-hosted | **Your choice** ⭐ |
+
+## What Makes Dcup Different?
+
+### 1. 📚 Document Structure Intelligence
+
+Most AI knowledge tools (including ChatGPT, NotebookLM, and even Elephas) treat PDFs like plain text. They chunk at arbitrary character limits, losing crucial context.
+
+**Dcup uses a 6-layer RAG architecture** that preserves:
+- ✅ Document hierarchy (chapters, sections, subsections)
+- ✅ Visual formatting (titles, bold text, emphasis)
+- ✅ Tables and images with context
+- ✅ Semantic relationships
+
+**Result:** When you ask "What did Chapter 3 say about algorithms?", Dcup knows exactly what "Chapter 3" means.
+
+**Tested on a 171-page computer science textbook:**
+- ✅ **98.3%** structure detection accuracy
+- ✅ All **12 chapters** correctly identified
+- ✅ **47 sections** and **134 subsections** mapped
+- ✅ **23 tables** extracted with full context
+
+### 2. 🌍 Works on Any Device
+
+Unlike Elephas (Mac/iOS only), Dcup runs as a web app. Access from:
+
+- 💻 **Windows** desktop
+- 🐧 **Linux** workstation
+- 🍎 **Mac** laptop
+- 🤖 **Android** phone
+- 📱 **iOS** tablet
+- 🌐 **Any modern browser** (Chrome, Firefox, Safari, Edge)
+
+**Progressive Web App (PWA) support coming March 2026** - install like a native app, works offline.
+
+### 3. 💰 3x Cheaper Embeddings
+
+Dcup uses [FastEmbed](https://github.com/qdrant/fastembed) instead of OpenAI embeddings:
+
+- ✅ **3x cheaper** (no API costs)
+- ✅ **Faster inference** (runs locally)
+- ✅ **Better privacy** (data never leaves your server)
+- ✅ **Same quality** (SOTA open models like BGE-small)
+
+For self-hosters, this means **$0 embedding costs** instead of paying OpenAI per query.
+
+### 4. 🔓 Open Source = Trust
+
+Your documents contain sensitive information—business plans, research notes, personal journals.
+
+**With Dcup:**
+- ✅ **Verify the code** yourself ([GitHub repo](https://github.com/your-username/dcup))
+- ✅ **Self-host** on your own server
+- ✅ **Audit security** - no black boxes
+- ✅ **Own your data** forever
+
+> ⚠️ **Note:** Elephas and NotebookLM? You're trusting a vendor or Google. No way to verify what happens behind the scenes.
+
+### 5. 💵 Half the Price
+
+| Service | Monthly | Yearly | You Save |
+|---------|---------|--------|----------|
+| **Elephas** | $40 | $480 | - |
+| **Dcup** | $19 | $228 | **$252/year** ⭐ |
+| **Self-host** | $5-10 hosting | $60-120 | **$360-420/year** 🔥 |
+
+**Save $252/year** while getting cross-platform support and open source code.
+
+Or **self-host for free** if you have a server (costs ~$5-10/month on DigitalOcean or Railway).
+
+## Who Is Dcup For?
+
+### 👨‍🔬 Researchers & Academics
+- Upload hundreds of papers
+- Ask questions across your entire research library
+- Get citations with exact page numbers
+- Works with tables, equations, and diagrams
+
+### 💼 Consultants & Freelancers
+- Organize client documents by project ("Brains")
+- Quickly find contract terms, meeting notes, proposals
+- Switch between multiple client contexts instantly
+- API access for workflow automation
+
+### 👨‍💻 Developers & Engineers
+- Search documentation, code comments, technical specs
+- Self-host on your own infrastructure
+- API integration with your tools
+- **Works on Linux** (unlike Elephas)
+
+### 🧠 Knowledge Workers
+- Never lose information buried in PDFs, notes, emails
+- Build your "second brain" with AI assistance
+- Search decades of accumulated knowledge instantly
+- Cross-platform: use on work PC and home Mac
+
+**Follow:** • [GitHub](https://github.com/your-username/dcup)
